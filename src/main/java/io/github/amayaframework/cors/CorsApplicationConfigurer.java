@@ -7,13 +7,13 @@ import io.github.amayaframework.web.WebApplication;
 
 public final class CorsApplicationConfigurer implements Runnable1<WebApplication> {
     private final CorsConfigBuilder builder;
-    private final boolean parseOptions;
+    private final boolean configure;
     private HttpMethodParser parser;
     private Iterable<HttpMethod> allMethods;
 
-    public CorsApplicationConfigurer(boolean parseOptions) {
+    public CorsApplicationConfigurer(boolean configure) {
         this.builder = new CorsConfigBuilder();
-        this.parseOptions = parseOptions;
+        this.configure = configure;
     }
 
     public CorsApplicationConfigurer() {
@@ -40,7 +40,7 @@ public final class CorsApplicationConfigurer implements Runnable1<WebApplication
         this.allMethods = allMethods;
     }
 
-    private void configureCors(OptionSet options) {
+    private void configure(OptionSet options) {
         if (options.asKey(CorsOptions.ALLOW_CREDENTIALS)) {
             builder.allowCredentials(true);
         }
@@ -85,9 +85,11 @@ public final class CorsApplicationConfigurer implements Runnable1<WebApplication
 
     @Override
     public void run(WebApplication app) {
-        var options = app.options().getGroup(CorsOptions.CORS_GROUP);
-        if (parseOptions) {
-            configureCors(options);
+        if (configure) {
+            var options = app.options().getGroup(CorsOptions.CORS_GROUP);
+            if (options != null) {
+                configure(options);
+            }
         }
         var config = builder.build();
         var task = new CorsTask(
