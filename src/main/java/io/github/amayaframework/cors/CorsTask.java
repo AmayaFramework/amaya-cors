@@ -30,7 +30,7 @@ public class CorsTask implements TaskConsumer<HttpContext> {
         this.exposed = StringUtil.render(config.exposedHeaders);
         this.maxAge = config.maxAge < 0 ? null : Integer.toString(config.maxAge);
     }
-    
+
     public CorsTask(CorsConfig config) {
         this(config, HttpMethod::of, HttpMethod.all().values());
     }

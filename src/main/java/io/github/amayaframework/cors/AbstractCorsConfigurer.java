@@ -6,7 +6,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
-import java.util.regex.Pattern;
 
 public abstract class AbstractCorsConfigurer<C extends CorsConfigurer> implements CorsConfigurer {
     protected Set<String> allowedOrigins;
@@ -319,7 +318,7 @@ public abstract class AbstractCorsConfigurer<C extends CorsConfigurer> implement
         }
         return (C) this;
     }
-    
+
     // Headers (allowed)
 
     @Override
