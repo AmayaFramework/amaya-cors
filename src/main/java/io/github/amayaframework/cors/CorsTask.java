@@ -35,6 +35,23 @@ public class CorsTask implements TaskConsumer<HttpContext> {
         this(config, HttpMethod::of, HttpMethod.all().values());
     }
 
+    private boolean checkOrigin(String origin) {
+        var allowedOrigins = config.allowedOrigins;
+        if (allowedOrigins == null || allowedOrigins.contains(origin)) {
+            return true;
+        }
+        var allowedRegexes = config.allowedRegexes;
+        if (allowedRegexes == null) {
+            return false;
+        }
+        for (var pattern : allowedRegexes) {
+            if (pattern.matcher(origin).matches()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private boolean checkHeaders(String headers) {
         if (config.allowedHeaders == null) {
             return true;
@@ -53,8 +70,7 @@ public class CorsTask implements TaskConsumer<HttpContext> {
         // Pre-set NO_CONTENT
         res.setStatus(HttpCode.NO_CONTENT);
         // Check for origin
-        var allowedOrigins = config.allowedOrigins;
-        if (allowedOrigins != null && !allowedOrigins.contains(origin)) {
+        if (!checkOrigin(origin)) {
             return;
         }
         // Check for method
@@ -86,7 +102,7 @@ public class CorsTask implements TaskConsumer<HttpContext> {
             res.setHeader(ProxyHeaders.VARY, ProxyHeaders.CREDENTIALS_PREFLIGHT_VALUE);
         } else {
             // Render origin
-            res.setHeader(CorsHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, allowedOrigins == null ? "*" : origin);
+            res.setHeader(CorsHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, config.allowedOrigins == null ? "*" : origin);
             // Render methods
             res.setHeader(CorsHeaders.ACCESS_CONTROL_ALLOW_METHODS, methods == null ? "*" : methods);
             // Render headers
@@ -134,9 +150,7 @@ public class CorsTask implements TaskConsumer<HttpContext> {
         }
         // Handle plain request
         // Skip not-allowed request
-        var allowedOrigins = config.allowedOrigins;
-        if (allowedOrigins != null && !allowedOrigins.contains(origin)) {
-            next.run(context);
+        if (!checkOrigin(origin)) {
             return;
         }
         handlePlainRequest(context.response(), origin);

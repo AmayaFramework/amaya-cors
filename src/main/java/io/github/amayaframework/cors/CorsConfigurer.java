@@ -27,6 +27,15 @@ public interface CorsConfigurer extends Resettable {
 
     CorsConfigurer denyOrigins(Iterable<String> origins);
 
+    // Regex origins
+    Set<String> allowedOriginRegexes();
+
+    CorsConfigurer allowedOriginRegexes(Set<String> origins);
+
+    CorsConfigurer addOriginRegex(String regex);
+
+    CorsConfigurer removeOriginRegex(String regex);
+
     // Methods
     Set<HttpMethod> allowedMethods(); // get
 

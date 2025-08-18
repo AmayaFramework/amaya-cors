@@ -6,9 +6,11 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 public abstract class AbstractCorsConfigurer<C extends CorsConfigurer> implements CorsConfigurer {
     protected Set<String> allowedOrigins;
+    protected Set<String> allowedRegexes;
     protected Set<HttpMethod> allowedMethods;
     protected Set<String> allowedHeaders;
     protected Set<String> exposedHeaders;
@@ -22,6 +24,7 @@ public abstract class AbstractCorsConfigurer<C extends CorsConfigurer> implement
     @Override
     public void reset() {
         allowedOrigins = CorsDefaults.ALLOWED_ORIGINS;
+        allowedRegexes = null;
         allowedMethods = new HashSet<>(CorsDefaults.ALLOWED_METHODS);
         allowedHeaders = new HashSet<>(CorsDefaults.ALLOWED_HEADERS);
         exposedHeaders = new HashSet<>();
@@ -32,6 +35,12 @@ public abstract class AbstractCorsConfigurer<C extends CorsConfigurer> implement
     private void ensureOrigins() {
         if (allowedOrigins == null) {
             allowedOrigins = new HashSet<>();
+        }
+    }
+
+    private void ensureAllowedRegexes() {
+        if (allowedRegexes == null) {
+            allowedRegexes = new HashSet<>();
         }
     }
 
@@ -120,6 +129,7 @@ public abstract class AbstractCorsConfigurer<C extends CorsConfigurer> implement
     @SuppressWarnings("unchecked")
     public C allowAnyOrigin() {
         allowedOrigins = null;
+        allowedRegexes = null;
         return (C) this;
     }
 
@@ -186,6 +196,38 @@ public abstract class AbstractCorsConfigurer<C extends CorsConfigurer> implement
             allowedOrigins = new HashSet<>();
         } else {
             deny(allowedOrigins, origins);
+        }
+        return (C) this;
+    }
+
+    // Regex origins
+
+    @Override
+    public Set<String> allowedOriginRegexes() {
+        return allowedRegexes;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public C allowedOriginRegexes(Set<String> origins) {
+        allowedRegexes = origins;
+        return (C) this;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public C addOriginRegex(String regex) {
+        Objects.requireNonNull(regex);
+        ensureAllowedRegexes();
+        allowedRegexes.add(regex);
+        return (C) this;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public C removeOriginRegex(String regex) {
+        if (allowedRegexes != null && regex != null) {
+            allowedRegexes.remove(regex);
         }
         return (C) this;
     }
@@ -456,6 +498,7 @@ public abstract class AbstractCorsConfigurer<C extends CorsConfigurer> implement
     @SuppressWarnings("unchecked")
     public C allowAny() {
         allowedOrigins = null;
+        allowedRegexes = null;
         allowedMethods = null;
         allowedHeaders = null;
         exposedHeaders = null;

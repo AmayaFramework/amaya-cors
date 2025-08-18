@@ -2,10 +2,13 @@ package io.github.amayaframework.cors;
 
 import io.github.amayaframework.http.HttpMethod;
 
+import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 public final class CorsConfig {
     final Set<String> allowedOrigins;
+    final List<Pattern> allowedRegexes;
     final Set<HttpMethod> allowedMethods;
     final Set<String> allowedHeaders;
     final Set<String> exposedHeaders;
@@ -13,12 +16,14 @@ public final class CorsConfig {
     final int maxAge;
 
     public CorsConfig(Set<String> allowedOrigins,
+                      List<Pattern> allowedRegexes,
                       Set<HttpMethod> allowedMethods,
                       Set<String> allowedHeaders,
                       Set<String> exposedHeaders,
                       boolean allowCredentials,
                       int maxAge) {
         this.allowedOrigins = allowedOrigins;
+        this.allowedRegexes = allowedRegexes;
         this.allowedMethods = allowedMethods;
         this.allowedHeaders = allowedHeaders;
         this.exposedHeaders = exposedHeaders;
@@ -28,6 +33,10 @@ public final class CorsConfig {
 
     public Set<String> getAllowedOrigins() {
         return allowedOrigins;
+    }
+
+    public List<Pattern> getAllowedRegexes() {
+        return allowedRegexes;
     }
 
     public Set<HttpMethod> getAllowedMethods() {
