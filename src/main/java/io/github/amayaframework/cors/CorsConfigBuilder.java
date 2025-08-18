@@ -1,43 +1,45 @@
 package io.github.amayaframework.cors;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-
 public final class CorsConfigBuilder extends AbstractCorsConfigurer<CorsConfigBuilder> {
-
-    private static Set<String> toLowerCase(Set<String> set) {
-        if (set == null) {
-            return null;
+    private void buildOrigins(CorsConfig config) {
+        if (originsBuilder == null) {
+            return;
         }
-        return set.stream().map(h -> h.toLowerCase(Locale.ENGLISH)).collect(Collectors.toSet());
+        config.setAllowedOrigins(originsBuilder.buildStrict());
+        config.setAllowedRegexes(originsBuilder.buildRegexes());
     }
 
-    private List<Pattern> compileRegexes() {
-        if (allowedRegexes == null) {
-            return null;
+    private void buildMethods(CorsConfig config) {
+        if (methodsBuilder == null) {
+            return;
         }
-        var ret = new ArrayList<Pattern>(allowedRegexes.size());
-        for (var raw : allowedRegexes) {
-            ret.add(Pattern.compile(raw));
+        config.setAllowedMethods(methodsBuilder.build());
+    }
+
+    private void buildHeaders(CorsConfig config) {
+        if (headersBuilder == null) {
+            return;
         }
-        return ret;
+        config.setAllowedHeaders(headersBuilder.build());
+    }
+
+    private void buildExposed(CorsConfig config) {
+        if (exposedBuilder == null) {
+            return;
+        }
+        config.setExposedHeaders(exposedBuilder.build());
     }
 
     public CorsConfig build() {
         try {
-            return new CorsConfig(
-                    allowedOrigins,
-                    compileRegexes(),
-                    allowedMethods,
-                    toLowerCase(allowedHeaders),
-                    toLowerCase(exposedHeaders),
-                    allowCredentials,
-                    maxAge
-            );
+            var ret = new CorsConfig();
+            buildOrigins(ret);
+            buildMethods(ret);
+            buildHeaders(ret);
+            buildExposed(ret);
+            ret.setAllowCredentials(allowCredentials);
+            ret.setMaxAge(maxAge);
+            return ret;
         } finally {
             reset();
         }

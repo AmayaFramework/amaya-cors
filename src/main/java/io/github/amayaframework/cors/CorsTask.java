@@ -12,15 +12,52 @@ import io.github.amayaframework.tokenize.Tokenizers;
 import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 
+/**
+ *
+ */
 public class CorsTask implements TaskConsumer<HttpContext> {
+
+    /**
+     *
+     */
     protected final CorsConfig config;
+
+    /**
+     *
+     */
     protected final HttpMethodParser parser;
+
+    /**
+     *
+     */
     protected final String allMethods;
+
+    /**
+     *
+     */
     protected final String methods;
+
+    /**
+     *
+     */
     protected final String headers;
+
+    /**
+     *
+     */
     protected final String exposed;
+
+    /**
+     *
+     */
     protected final String maxAge;
 
+    /**
+     *
+     * @param config
+     * @param parser
+     * @param allMethods
+     */
     public CorsTask(CorsConfig config, HttpMethodParser parser, Iterable<HttpMethod> allMethods) {
         this.config = config;
         this.parser = parser;
@@ -31,10 +68,19 @@ public class CorsTask implements TaskConsumer<HttpContext> {
         this.maxAge = config.maxAge < 0 ? null : Integer.toString(config.maxAge);
     }
 
+    /**
+     *
+     * @param config
+     */
     public CorsTask(CorsConfig config) {
         this(config, HttpMethod::of, HttpMethod.all().values());
     }
 
+    /**
+     *
+     * @param origin
+     * @return
+     */
     protected boolean checkOrigin(String origin) {
         var allowedOrigins = config.allowedOrigins;
         if (allowedOrigins != null && allowedOrigins.contains(origin)) {
@@ -52,6 +98,11 @@ public class CorsTask implements TaskConsumer<HttpContext> {
         return allowedOrigins == null;
     }
 
+    /**
+     *
+     * @param origin
+     * @return
+     */
     protected String renderOrigin(String origin) {
         if (config.allowedOrigins == null && config.allowedRegexes == null) {
             return "*";
@@ -59,6 +110,11 @@ public class CorsTask implements TaskConsumer<HttpContext> {
         return origin;
     }
 
+    /**
+     *
+     * @param headers
+     * @return
+     */
     protected boolean checkHeaders(String headers) {
         if (config.allowedHeaders == null) {
             return true;
@@ -73,6 +129,13 @@ public class CorsTask implements TaskConsumer<HttpContext> {
         return true;
     }
 
+    /**
+     *
+     * @param req
+     * @param res
+     * @param origin
+     * @param method
+     */
     protected void handlePreflight(HttpRequest req, HttpResponse res, String origin, String method) {
         // Pre-set NO_CONTENT
         res.setStatus(HttpCode.NO_CONTENT);
@@ -119,6 +182,11 @@ public class CorsTask implements TaskConsumer<HttpContext> {
         }
     }
 
+    /**
+     *
+     * @param res
+     * @param origin
+     */
     protected void handlePlainRequest(HttpResponse res, String origin) {
         // Set Vary header
         res.setHeader(ProxyHeaders.VARY, ProxyHeaders.ORIGIN_VALUE);

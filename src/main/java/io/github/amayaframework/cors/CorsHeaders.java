@@ -1,5 +1,8 @@
 package io.github.amayaframework.cors;
 
+/**
+ *
+ */
 public final class CorsHeaders {
     private CorsHeaders() {
     }

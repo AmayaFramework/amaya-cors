@@ -29,10 +29,20 @@ dependencies {
     testRuntimeOnly group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.10.0'
     // Tokenizer
     implementation group: 'io.github.amayaframework', name: 'amaya-tokenize', version: '2.0.0'
-    // TODO Remove core
-    implementation group: 'io.github.amayaframework', name: 'amaya-core', version: '3.1.0'
-    // TODO Remove tomcat
-    implementation group: 'io.github.amayaframework', name: 'amaya-tomcat', version: '2.1.0-10.1.44'
+    // Servlets
+    compileOnly group: 'jakarta.servlet', name: 'jakarta.servlet-api', version: '6.0.0'
+    // Amaya modules
+    compileOnly group: 'io.github.amayaframework', name: 'amaya-options', version: '2.0.0'
+    compileOnly group: 'io.github.amayaframework', name: 'amaya-service', version: '2.0.0'
+    compileOnly group: 'io.github.amayaframework', name: 'amaya-http', version: '2.0.0'
+    compileOnly group: 'io.github.amayaframework', name: 'amaya-context', version: '2.0.0'
+    compileOnly group: 'io.github.amayaframework', name: 'amaya-server', version: '2.1.0'
+    compileOnly group: 'io.github.amayaframework', name: 'amaya-application', version: '2.0.0'
+    compileOnly group: 'io.github.amayaframework', name: 'amaya-web', version: '2.0.0'
+//    // TODO Remove core
+//    implementation group: 'io.github.amayaframework', name: 'amaya-core', version: '3.1.0'
+//    // TODO Remove tomcat
+//    implementation group: 'io.github.amayaframework', name: 'amaya-tomcat', version: '2.1.0-10.1.44'
 }
 
 test {

@@ -5,37 +5,67 @@ import io.github.amayaframework.http.HttpMethod;
 import io.github.amayaframework.options.OptionSet;
 import io.github.amayaframework.web.WebApplication;
 
+/**
+ *
+ */
 public final class CorsApplicationConfigurer implements Runnable1<WebApplication> {
     private final CorsConfigBuilder builder;
     private final boolean configure;
     private HttpMethodParser parser;
     private Iterable<HttpMethod> allMethods;
 
+    /**
+     *
+     * @param configure
+     */
     public CorsApplicationConfigurer(boolean configure) {
         this.builder = new CorsConfigBuilder();
         this.configure = configure;
     }
 
+    /**
+     *
+     */
     public CorsApplicationConfigurer() {
         this(false);
     }
 
+    /**
+     *
+     * @return
+     */
     public CorsConfigurer getConfigurer() {
         return builder;
     }
 
+    /**
+     *
+     * @return
+     */
     public HttpMethodParser getParser() {
         return parser;
     }
 
+    /**
+     *
+     * @param parser
+     */
     public void setParser(HttpMethodParser parser) {
         this.parser = parser;
     }
 
+    /**
+     *
+     * @return
+     */
     public Iterable<HttpMethod> getAllMethods() {
         return allMethods;
     }
 
+    /**
+     *
+     * @param allMethods
+     */
     public void setAllMethods(Iterable<HttpMethod> allMethods) {
         this.allMethods = allMethods;
     }
@@ -53,36 +83,41 @@ public final class CorsApplicationConfigurer implements Runnable1<WebApplication
             return;
         }
         if (options.asKey(CorsOptions.ALLOW_ANY_ORIGIN)) {
-            builder.allowAnyOrigin();
+            builder.allowedOrigins().allowAny();
         } else {
-            builder.allowOrigins(options.get(CorsOptions.ALLOWED_ORIGINS));
+            var allowedOrigins =  builder.allowedOrigins();
+            allowedOrigins.allow(options.get(CorsOptions.ALLOWED_ORIGINS));
             var regexes = options.get(CorsOptions.ORIGIN_REGEXES);
             if (regexes != null) {
                 for (var regex : regexes) {
                     if (regex == null) {
                         continue;
                     }
-                    builder.addOriginRegex(regex);
+                    allowedOrigins.addRegex(regex);
                 }
             }
         }
         if (options.asKey(CorsOptions.ALLOW_ANY_METHOD)) {
-            builder.allowAnyMethod();
+            builder.allowedMethods().allowAny();
         } else {
-            builder.allowMethods(options.get(CorsOptions.ALLOWED_METHODS));
+            builder.allowedMethods().allow(options.get(CorsOptions.ALLOWED_METHODS));
         }
         if (options.asKey(CorsOptions.ALLOW_ANY_HEADER)) {
-            builder.allowAnyHeader();
+            builder.allowedHeaders().allowAny();
         } else {
-            builder.allowHeaders(options.get(CorsOptions.ALLOWED_HEADERS));
+            builder.allowedHeaders().allow(options.get(CorsOptions.ALLOWED_HEADERS));
         }
         if (options.asKey(CorsOptions.EXPOSE_ANY_HEADER)) {
-            builder.exposeAnyHeader();
+            builder.exposedHeaders().allowAny();
         } else {
-            builder.exposeHeaders(options.get(CorsOptions.EXPOSED_HEADERS));
+            builder.exposedHeaders().allow(options.get(CorsOptions.EXPOSED_HEADERS));
         }
     }
 
+    /**
+     *
+     * @param app
+     */
     @Override
     public void run(WebApplication app) {
         if (configure) {

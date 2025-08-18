@@ -6,57 +6,81 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+/**
+ *
+ */
 public final class CorsConfig {
-    final Set<String> allowedOrigins;
-    final List<Pattern> allowedRegexes;
-    final Set<HttpMethod> allowedMethods;
-    final Set<String> allowedHeaders;
-    final Set<String> exposedHeaders;
-    final boolean allowCredentials;
-    final int maxAge;
+    Set<String> allowedOrigins;
+    List<Pattern> allowedRegexes;
+    Set<HttpMethod> allowedMethods;
+    Set<String> allowedHeaders;
+    Set<String> exposedHeaders;
+    boolean allowCredentials;
+    int maxAge;
 
-    public CorsConfig(Set<String> allowedOrigins,
-                      List<Pattern> allowedRegexes,
-                      Set<HttpMethod> allowedMethods,
-                      Set<String> allowedHeaders,
-                      Set<String> exposedHeaders,
-                      boolean allowCredentials,
-                      int maxAge) {
-        this.allowedOrigins = allowedOrigins;
-        this.allowedRegexes = allowedRegexes;
-        this.allowedMethods = allowedMethods;
-        this.allowedHeaders = allowedHeaders;
-        this.exposedHeaders = exposedHeaders;
-        this.allowCredentials = allowCredentials;
-        this.maxAge = maxAge;
+    public CorsConfig() {
+        this.allowedOrigins = null;
+        this.allowedRegexes = null;
+        this.allowedMethods = null;
+        this.allowedHeaders = null;
+        this.allowCredentials = false;
+        this.maxAge = -1;
     }
 
     public Set<String> getAllowedOrigins() {
         return allowedOrigins;
     }
 
+    public void setAllowedOrigins(Set<String> allowedOrigins) {
+        this.allowedOrigins = allowedOrigins;
+    }
+
     public List<Pattern> getAllowedRegexes() {
         return allowedRegexes;
+    }
+
+    public void setAllowedRegexes(List<Pattern> allowedRegexes) {
+        this.allowedRegexes = allowedRegexes;
     }
 
     public Set<HttpMethod> getAllowedMethods() {
         return allowedMethods;
     }
 
+    public void setAllowedMethods(Set<HttpMethod> allowedMethods) {
+        this.allowedMethods = allowedMethods;
+    }
+
     public Set<String> getAllowedHeaders() {
         return allowedHeaders;
+    }
+
+    public void setAllowedHeaders(Set<String> allowedHeaders) {
+        this.allowedHeaders = allowedHeaders;
     }
 
     public Set<String> getExposedHeaders() {
         return exposedHeaders;
     }
 
-    public boolean isAllowCredentials() {
-        return allowCredentials;
+    public void setExposedHeaders(Set<String> exposedHeaders) {
+        this.exposedHeaders = exposedHeaders;
     }
 
     public int getMaxAge() {
         return maxAge;
+    }
+
+    public void setMaxAge(int maxAge) {
+        this.maxAge = maxAge;
+    }
+
+    public boolean isAllowCredentials() {
+        return allowCredentials;
+    }
+
+    public void setAllowCredentials(boolean allowCredentials) {
+        this.allowCredentials = allowCredentials;
     }
 
     @Override
