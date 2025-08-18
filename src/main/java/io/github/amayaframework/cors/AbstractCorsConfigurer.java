@@ -15,6 +15,10 @@ public abstract class AbstractCorsConfigurer<C extends CorsConfigurer> implement
     protected boolean allowCredentials;
     protected int maxAge;
 
+    protected AbstractCorsConfigurer() {
+        reset();
+    }
+
     @Override
     public void reset() {
         allowedOrigins = CorsDefaults.ALLOWED_ORIGINS;
