@@ -52,6 +52,13 @@ public class CorsTask implements TaskConsumer<HttpContext> {
         return false;
     }
 
+    private String renderOrigin(String origin) {
+        if (config.allowedOrigins == null && config.allowedRegexes == null) {
+            return "*";
+        }
+        return origin;
+    }
+
     private boolean checkHeaders(String headers) {
         if (config.allowedHeaders == null) {
             return true;
@@ -102,7 +109,7 @@ public class CorsTask implements TaskConsumer<HttpContext> {
             res.setHeader(ProxyHeaders.VARY, ProxyHeaders.CREDENTIALS_PREFLIGHT_VALUE);
         } else {
             // Render origin
-            res.setHeader(CorsHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, config.allowedOrigins == null ? "*" : origin);
+            res.setHeader(CorsHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, renderOrigin(origin));
             // Render methods
             res.setHeader(CorsHeaders.ACCESS_CONTROL_ALLOW_METHODS, methods == null ? "*" : methods);
             // Render headers
@@ -127,7 +134,7 @@ public class CorsTask implements TaskConsumer<HttpContext> {
             }
         } else {
             // Render origin
-            res.setHeader(CorsHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, config.allowedOrigins == null ? "*" : origin);
+            res.setHeader(CorsHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, renderOrigin(origin));
             // Render exposed headers
             res.setHeader(CorsHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, exposed == null ? "*" : exposed);
         }
