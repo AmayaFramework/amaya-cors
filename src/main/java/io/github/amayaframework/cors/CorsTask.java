@@ -37,11 +37,11 @@ public class CorsTask implements TaskConsumer<HttpContext> {
 
     private boolean checkOrigin(String origin) {
         var allowedOrigins = config.allowedOrigins;
-        if (allowedOrigins == null || allowedOrigins.contains(origin)) {
+        if (allowedOrigins != null && allowedOrigins.contains(origin)) {
             return true;
         }
         var allowedRegexes = config.allowedRegexes;
-        if (allowedRegexes == null) {
+        if (allowedOrigins == null && allowedRegexes == null) {
             return false;
         }
         for (var pattern : allowedRegexes) {
