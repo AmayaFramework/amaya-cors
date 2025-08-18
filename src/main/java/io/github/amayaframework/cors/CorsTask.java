@@ -30,6 +30,10 @@ public class CorsTask implements TaskConsumer<HttpContext> {
         this.exposed = StringUtil.render(config.exposedHeaders);
         this.maxAge = config.maxAge < 0 ? null : Integer.toString(config.maxAge);
     }
+    
+    public CorsTask(CorsConfig config) {
+        this(config, HttpMethod::of, HttpMethod.all().values());
+    }
 
     private boolean checkHeaders(String headers) {
         if (config.allowedHeaders == null) {
@@ -38,7 +42,7 @@ public class CorsTask implements TaskConsumer<HttpContext> {
         var split = Tokenizers.split(headers, ",");
         var allowed = config.allowedHeaders;
         for (var header : split) {
-            if (!allowed.contains(header.strip().toLowerCase(Locale.US))) {
+            if (!allowed.contains(header.strip().toLowerCase(Locale.ENGLISH))) {
                 return false;
             }
         }

@@ -10,7 +10,7 @@ public final class CorsConfigBuilder extends AbstractCorsConfigurer<CorsConfigBu
         if (set == null) {
             return null;
         }
-        return set.stream().map(h -> h.toLowerCase(Locale.US)).collect(Collectors.toSet());
+        return set.stream().map(h -> h.toLowerCase(Locale.ENGLISH)).collect(Collectors.toSet());
     }
 
     public CorsConfig build() {

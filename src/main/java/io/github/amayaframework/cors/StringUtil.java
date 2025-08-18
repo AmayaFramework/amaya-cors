@@ -19,7 +19,7 @@ final class StringUtil {
         while (iterator.hasNext()) {
             builder.append(',').append(iterator.next());
         }
-        return builder.toString().toLowerCase(Locale.US);
+        return builder.toString().toLowerCase(Locale.ENGLISH);
     }
 
     @SafeVarargs
@@ -36,6 +36,6 @@ final class StringUtil {
         for (var i = 1; i < length; ++i) {
             builder.append(',').append(values[i]);
         }
-        return builder.toString().toLowerCase(Locale.US);
+        return builder.toString().toLowerCase(Locale.ENGLISH);
     }
 }
