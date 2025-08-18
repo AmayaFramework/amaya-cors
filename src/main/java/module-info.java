@@ -4,5 +4,6 @@ module amayaframework.cors {
     requires amayaframework.options;
     requires amayaframework.tokenize;
     requires com.github.romanqed.jtype;
+    requires com.github.romanqed.jsync;
     exports io.github.amayaframework.cors;
 }

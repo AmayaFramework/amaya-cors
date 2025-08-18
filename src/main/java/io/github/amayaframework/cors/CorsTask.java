@@ -35,7 +35,7 @@ public class CorsTask implements TaskConsumer<HttpContext> {
         this(config, HttpMethod::of, HttpMethod.all().values());
     }
 
-    private boolean checkOrigin(String origin) {
+    protected boolean checkOrigin(String origin) {
         var allowedOrigins = config.allowedOrigins;
         if (allowedOrigins != null && allowedOrigins.contains(origin)) {
             return true;
@@ -52,14 +52,14 @@ public class CorsTask implements TaskConsumer<HttpContext> {
         return allowedOrigins == null;
     }
 
-    private String renderOrigin(String origin) {
+    protected String renderOrigin(String origin) {
         if (config.allowedOrigins == null && config.allowedRegexes == null) {
             return "*";
         }
         return origin;
     }
 
-    private boolean checkHeaders(String headers) {
+    protected boolean checkHeaders(String headers) {
         if (config.allowedHeaders == null) {
             return true;
         }
@@ -73,7 +73,7 @@ public class CorsTask implements TaskConsumer<HttpContext> {
         return true;
     }
 
-    private void handlePreflight(HttpRequest req, HttpResponse res, String origin, String method) {
+    protected void handlePreflight(HttpRequest req, HttpResponse res, String origin, String method) {
         // Pre-set NO_CONTENT
         res.setStatus(HttpCode.NO_CONTENT);
         // Check for origin
@@ -119,7 +119,7 @@ public class CorsTask implements TaskConsumer<HttpContext> {
         }
     }
 
-    private void handlePlainRequest(HttpResponse res, String origin) {
+    protected void handlePlainRequest(HttpResponse res, String origin) {
         // Set Vary header
         res.setHeader(ProxyHeaders.VARY, ProxyHeaders.ORIGIN_VALUE);
         // Split logic: with and without credentials
@@ -155,12 +155,10 @@ public class CorsTask implements TaskConsumer<HttpContext> {
             handlePreflight(req, context.response(), origin, requestedMethod);
             return;
         }
-        // Handle plain request
-        // Skip not-allowed request
-        if (!checkOrigin(origin)) {
-            return;
+        // Handle plain request if origin allowed
+        if (checkOrigin(origin)) {
+            handlePlainRequest(context.response(), origin);
         }
-        handlePlainRequest(context.response(), origin);
         // Do next
         next.run(context);
     }
@@ -179,13 +177,10 @@ public class CorsTask implements TaskConsumer<HttpContext> {
             handlePreflight(req, context.response(), origin, requestedMethod);
             return CompletableFuture.completedFuture(null);
         }
-        // Handle plain request
-        // Skip not-allowed request
-        var allowedOrigins = config.allowedOrigins;
-        if (allowedOrigins != null && !allowedOrigins.contains(origin)) {
-            return next.runAsync(context);
+        // Handle plain request if origin allowed
+        if (checkOrigin(origin)) {
+            handlePlainRequest(context.response(), origin);
         }
-        handlePlainRequest(context.response(), origin);
         // Do next
         return next.runAsync(context);
     }
