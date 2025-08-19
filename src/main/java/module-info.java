@@ -12,11 +12,6 @@
  * and tokenization, as well as utility libraries for synchronous and type-safe operations.
  */
 module amayaframework.cors {
-    // TODO For removal (dev deps)
-    requires amayaframework.tomcat;
-    requires com.github.romanqed.jsync;
-    requires amayaframework.core;
-    // End for-removal section
     // Imports
     // Basic dependencies
     requires amayaframework.tokenize;
