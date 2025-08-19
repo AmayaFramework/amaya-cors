@@ -4,8 +4,18 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+/**
+ * Base implementation for {@link OriginConfigurer} providing common functionality
+ * for managing allowed origins and origin regex patterns.
+ *
+ * @param <O> the concrete type of the origin configurer
+ */
 public abstract class AbstractOriginConfigurer<O extends OriginConfigurer>
         extends AbstractAccessConfigurer<String, O> implements OriginConfigurer {
+
+    /**
+     * Set of regex patterns used to match allowed origins.
+     */
     protected Set<String> regexes;
 
     @Override
