@@ -1,11 +1,22 @@
 /**
- * TODO
+ * Provides Cross-Origin Resource Sharing (CORS) support for Amaya framework applications.
+ * <p>
+ * This module includes:
+ * <ul>
+ *     <li>Builders and configurers for CORS policies ({@link io.github.amayaframework.cors.CorsConfigBuilder}, {@link io.github.amayaframework.cors.CorsApplicationConfigurer})</li>
+ *     <li>Default CORS headers and constants ({@link io.github.amayaframework.cors.CorsHeaders}, {@link io.github.amayaframework.cors.ProxyHeaders}, {@link io.github.amayaframework.cors.CorsDefaults})</li>
+ *     <li>Task for handling CORS in HTTP requests ({@link io.github.amayaframework.cors.CorsTask})</li>
+ * </ul>
+ * <p>
+ * Dependencies include core Amaya modules for HTTP handling, web applications, options management,
+ * and tokenization, as well as utility libraries for synchronous and type-safe operations.
  */
 module amayaframework.cors {
-//    // TODO For removal
+    // TODO For removal (dev deps)
     requires amayaframework.tomcat;
     requires com.github.romanqed.jsync;
     requires amayaframework.core;
+    // End for-removal section
     // Imports
     // Basic dependencies
     requires amayaframework.tokenize;
