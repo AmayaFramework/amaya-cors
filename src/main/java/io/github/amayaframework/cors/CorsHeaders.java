@@ -1,7 +1,7 @@
 package io.github.amayaframework.cors;
 
 /**
- *
+ * Defines the standard HTTP headers used for CORS requests and responses.
  */
 public final class CorsHeaders {
     private CorsHeaders() {

@@ -4,63 +4,75 @@ import io.github.amayaframework.application.Resettable;
 import io.github.amayaframework.http.HttpMethod;
 
 /**
- *
+ * Central configuration interface for CORS.
+ * <p>
+ * Provides builders for origins, methods, headers, and other policies
+ * defined by the CORS specification.
  */
 public interface CorsConfigurer extends Resettable {
 
     /**
+     * Configures allowed origins.
      *
-     * @return
+     * @return an {@link OriginConfigurer} instance
      */
     OriginConfigurer allowedOrigins();
 
     /**
+     * Configures allowed HTTP methods.
      *
-     * @return
+     * @return an {@link AccessConfigurer} for {@link HttpMethod}
      */
     AccessConfigurer<HttpMethod> allowedMethods();
 
     /**
+     * Configures allowed request headers.
      *
-     * @return
+     * @return an {@link AccessConfigurer} for header names
      */
     AccessConfigurer<String> allowedHeaders();
 
     /**
+     * Configures exposed response headers.
      *
-     * @return
+     * @return an {@link AccessConfigurer} for header names
      */
     AccessConfigurer<String> exposedHeaders();
 
     /**
+     * Allows any origin, method, and header.
      *
-     * @return
+     * @return this configurer for chaining
      */
     CorsConfigurer allowAny();
 
     /**
+     * Returns whether credentials are allowed.
      *
-     * @return
+     * @return {@code true} if credentials are allowed
      */
     boolean allowCredentials();
 
     /**
+     * Sets whether credentials are allowed.
      *
-     * @param allow
-     * @return
+     * @param allow {@code true} to allow credentials
+     * @return this configurer for chaining
      */
     CorsConfigurer allowCredentials(boolean allow);
 
     /**
+     * Returns the configured max age for preflight caching.
      *
-     * @return
+     * @return max age in seconds
      */
     int maxAge();
 
     /**
+     * Sets the max age for preflight caching.
      *
-     * @param seconds
-     * @return
+     * @param seconds duration in seconds
+     * @return this configurer for chaining
      */
     CorsConfigurer maxAge(int seconds);
 }

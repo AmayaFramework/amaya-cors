@@ -3,10 +3,6 @@ package io.github.amayaframework.cors;
 import io.github.amayaframework.application.Resettable;
 import io.github.amayaframework.http.HttpMethod;
 
-/**
- *
- * @param <C>
- */
 abstract class AbstractCorsConfigurer<C extends CorsConfigurer> implements CorsConfigurer {
     protected CompileOriginBuilder originsBuilder;
     protected GenericAccessBuilder<HttpMethod> methodsBuilder;

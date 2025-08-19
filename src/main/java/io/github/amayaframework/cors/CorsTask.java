@@ -13,50 +13,59 @@ import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 
 /**
- *
+ * A {@link TaskConsumer} implementation providing
+ * Cross-Origin Resource Sharing (CORS) handling for HTTP requests.
+ * <p>
+ * This task intercepts incoming requests, checks the {@code Origin} header,
+ * and applies the configured CORS policy. It supports both simple
+ * requests and preflight (OPTIONS) requests.
  */
 public class CorsTask implements TaskConsumer<HttpContext> {
 
     /**
-     *
+     * CORS configuration defining allowed origins, methods, headers, and other options.
      */
     protected final CorsConfig config;
 
     /**
-     *
+     * Parser used to resolve {@link HttpMethod} from a string.
+     * <p>
+     * By default, uses {@link HttpMethod#of(String)} to parse HTTP methods.
      */
     protected final HttpMethodParser parser;
 
     /**
-     *
+     * String representation of all supported HTTP methods.
      */
     protected final String allMethods;
 
     /**
-     *
+     * String representation of explicitly allowed HTTP methods from {@link CorsConfig}.
      */
     protected final String methods;
 
     /**
-     *
+     * String representation of explicitly allowed request headers from {@link CorsConfig}.
      */
     protected final String headers;
 
     /**
-     *
+     * String representation of exposed response headers from {@link CorsConfig}.
      */
     protected final String exposed;
 
     /**
-     *
+     * String representation of {@code Access-Control-Max-Age} header value,
+     * or {@code null} if not configured.
      */
     protected final String maxAge;
 
     /**
+     * Creates a new {@code CorsTask} with the given configuration.
      *
-     * @param config
-     * @param parser
-     * @param allMethods
+     * @param config     the CORS configuration
+     * @param parser     the HTTP method parser
+     * @param allMethods iterable of all available HTTP methods
      */
     public CorsTask(CorsConfig config, HttpMethodParser parser, Iterable<HttpMethod> allMethods) {
         this.config = config;
@@ -69,17 +78,20 @@ public class CorsTask implements TaskConsumer<HttpContext> {
     }
 
     /**
+     * Creates a new {@code CorsTask} with the given configuration,
+     * using default {@link HttpMethod} parser and all methods.
      *
-     * @param config
+     * @param config the CORS configuration
      */
     public CorsTask(CorsConfig config) {
         this(config, HttpMethod::of, HttpMethod.all().values());
     }
 
     /**
+     * Checks whether the given origin is allowed by this configuration.
      *
-     * @param origin
-     * @return
+     * @param origin request origin
+     * @return {@code true} if allowed, {@code false} otherwise
      */
     protected boolean checkOrigin(String origin) {
         var allowedOrigins = config.allowedOrigins;
@@ -99,9 +111,12 @@ public class CorsTask implements TaskConsumer<HttpContext> {
     }
 
     /**
+     * Renders the origin value to be sent in the response.
+     * <p>
+     * Returns {@code *} if no restrictions are set (both allowed origins and regex rules are {@code null}).
      *
-     * @param origin
-     * @return
+     * @param origin request origin
+     * @return rendered origin string
      */
     protected String renderOrigin(String origin) {
         if (config.allowedOrigins == null && config.allowedRegexes == null) {
@@ -110,10 +125,12 @@ public class CorsTask implements TaskConsumer<HttpContext> {
         return origin;
     }
 
+
     /**
+     * Checks whether this configuration allows the requested headers.
      *
-     * @param headers
-     * @return
+     * @param headers comma-separated list of request headers
+     * @return {@code true} if all headers are allowed, {@code false} otherwise
      */
     protected boolean checkHeaders(String headers) {
         if (config.allowedHeaders == null) {
@@ -129,12 +146,17 @@ public class CorsTask implements TaskConsumer<HttpContext> {
         return true;
     }
 
+
     /**
+     * Handles a CORS preflight (OPTIONS) request.
+     * <p>
+     * Validates origin, method, and headers against {@link CorsConfig},
+     * then writes appropriate CORS response headers.
      *
-     * @param req
-     * @param res
-     * @param origin
-     * @param method
+     * @param req    the HTTP request
+     * @param res    the HTTP response
+     * @param origin request origin
+     * @param method requested method
      */
     protected void handlePreflight(HttpRequest req, HttpResponse res, String origin, String method) {
         // Pre-set NO_CONTENT
@@ -183,9 +205,13 @@ public class CorsTask implements TaskConsumer<HttpContext> {
     }
 
     /**
+     * Handles a simple (non-preflight) CORS request.
+     * <p>
+     * Writes {@code Access-Control-Allow-Origin}, {@code Access-Control-Allow-Credentials},
+     * and {@code Access-Control-Expose-Headers} as configured.
      *
-     * @param res
-     * @param origin
+     * @param res    the HTTP response
+     * @param origin request origin
      */
     protected void handlePlainRequest(HttpResponse res, String origin) {
         // Set Vary header
@@ -208,6 +234,14 @@ public class CorsTask implements TaskConsumer<HttpContext> {
         }
     }
 
+    /**
+     * Executes this CORS task synchronously.
+     * Intercepts requests, checks for preflight, and applies CORS headers.
+     *
+     * @param context the HTTP context
+     * @param next    the next task in the chain
+     * @throws Throwable if the next task fails
+     */
     @Override
     public void run(HttpContext context, Task<HttpContext> next) throws Throwable {
         var req = context.request();
@@ -231,6 +265,14 @@ public class CorsTask implements TaskConsumer<HttpContext> {
         next.run(context);
     }
 
+    /**
+     * Executes this CORS task asynchronously.
+     * Intercepts requests, checks for preflight, and applies CORS headers.
+     *
+     * @param context the HTTP context
+     * @param next    the next task in the chain
+     * @return a {@link CompletableFuture} representing completion
+     */
     @Override
     public CompletableFuture<Void> runAsync(HttpContext context, Task<HttpContext> next) {
         var req = context.request();
@@ -253,16 +295,31 @@ public class CorsTask implements TaskConsumer<HttpContext> {
         return next.runAsync(context);
     }
 
+    /**
+     * Returns {@code true} because this task supports synchronous execution.
+     *
+     * @return {@code true}
+     */
     @Override
     public boolean isSync() {
         return true;
     }
 
+    /**
+     * Returns {@code true} because this task supports asynchronous execution.
+     *
+     * @return {@code true}
+     */
     @Override
     public boolean isAsync() {
         return true;
     }
 
+    /**
+     * Returns {@code true} because this task supports both synchronous and asynchronous execution.
+     *
+     * @return {@code true}
+     */
     @Override
     public boolean isUni() {
         return true;
