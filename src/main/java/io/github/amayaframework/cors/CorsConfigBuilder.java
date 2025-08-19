@@ -80,12 +80,18 @@ public final class CorsConfigBuilder implements CorsConfigurer {
         return exposedBuilder;
     }
 
+    private static void allowAny(AccessConfigurer<?> configurer) {
+        if (configurer != null) {
+            configurer.allowAny();
+        }
+    }
+
     @Override
     public CorsConfigBuilder allowAny() {
-        originsBuilder.allowAny();
-        methodsBuilder.allowAny();
-        headersBuilder.allowAny();
-        exposedBuilder.allowAny();
+        allowAny(originsBuilder);
+        allowAny(methodsBuilder);
+        allowAny(headersBuilder);
+        allowAny(exposedBuilder);
         return this;
     }
 

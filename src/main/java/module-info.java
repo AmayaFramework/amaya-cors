@@ -3,9 +3,9 @@
  */
 module amayaframework.cors {
 //    // TODO For removal
-//    requires amayaframework.tomcat;
-//    requires com.github.romanqed.jsync;
-//    requires amayaframework.core;
+    requires amayaframework.tomcat;
+    requires com.github.romanqed.jsync;
+    requires amayaframework.core;
     // Imports
     // Basic dependencies
     requires amayaframework.tokenize;

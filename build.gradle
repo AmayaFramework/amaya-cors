@@ -39,10 +39,10 @@ dependencies {
     compileOnly group: 'io.github.amayaframework', name: 'amaya-server', version: '2.1.0'
     compileOnly group: 'io.github.amayaframework', name: 'amaya-application', version: '2.0.0'
     compileOnly group: 'io.github.amayaframework', name: 'amaya-web', version: '2.0.0'
-//    // TODO Remove core
-//    implementation group: 'io.github.amayaframework', name: 'amaya-core', version: '3.1.0'
-//    // TODO Remove tomcat
-//    implementation group: 'io.github.amayaframework', name: 'amaya-tomcat', version: '2.1.0-10.1.44'
+    // TODO Remove core
+    implementation group: 'io.github.amayaframework', name: 'amaya-core', version: '3.1.0'
+    // TODO Remove tomcat
+    implementation group: 'io.github.amayaframework', name: 'amaya-tomcat', version: '2.1.0-10.1.44'
 }
 
 test {

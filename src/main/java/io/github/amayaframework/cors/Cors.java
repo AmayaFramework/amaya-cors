@@ -1,5 +1,7 @@
 package io.github.amayaframework.cors;
 
+import java.util.function.Consumer;
+
 /**
  * Provides convenient factory methods for creating CORS configurations
  * and application configurers.
@@ -52,6 +54,22 @@ public final class Cors {
     }
 
     /**
+     * Creates a {@link CorsApplicationConfigurer} and applies a custom configuration
+     * to the {@link CorsConfigurer} using the given consumer.
+     * <p>
+     * The returned configurer does not automatically read options from the application's
+     * option set; instead, the provided {@code consumer} is invoked to configure the CORS settings.
+     *
+     * @param consumer a {@link Consumer} that receives the {@link CorsConfigurer} to configure
+     * @return a {@link CorsApplicationConfigurer} with the custom CORS configuration applied
+     */
+    public static CorsApplicationConfigurer applicationConfigurer(Consumer<CorsConfigurer> consumer) {
+        var ret = new CorsApplicationConfigurer(false);
+        consumer.accept(ret.getConfigurer());
+        return ret;
+    }
+
+    /**
      * Creates a new {@link CorsApplicationConfigurer} without automatic option configuration,
      * pre-populated with default CORS settings.
      * <p>
@@ -66,7 +84,7 @@ public final class Cors {
      * @return a pre-configured {@link CorsApplicationConfigurer}
      */
     public static CorsApplicationConfigurer applicationConfigurer() {
-        var ret = applicationConfigurer(false);
+        var ret = new CorsApplicationConfigurer(false);
         var cfg = ret.getConfigurer();
         cfg.allowedOrigins().allowAny();
         cfg.allowedMethods().allow(CorsDefaults.ALLOWED_METHODS);
