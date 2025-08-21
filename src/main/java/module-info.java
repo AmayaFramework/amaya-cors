@@ -14,7 +14,6 @@
 module amayaframework.cors {
     // Imports
     // Basic dependencies
-    requires amayaframework.tokenize;
     requires com.github.romanqed.jtype;
     // Amaya modules
     requires amayaframework.options;

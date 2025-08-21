@@ -7,8 +7,8 @@ import io.github.amayaframework.context.HttpRequest;
 import io.github.amayaframework.context.HttpResponse;
 import io.github.amayaframework.http.HttpCode;
 import io.github.amayaframework.http.HttpMethod;
-import io.github.amayaframework.tokenize.Tokenizers;
 
+import java.util.Enumeration;
 import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 
@@ -129,23 +129,21 @@ public class CorsTask implements TaskConsumer<HttpContext> {
     /**
      * Checks whether this configuration allows the requested headers.
      *
-     * @param headers comma-separated list of request headers
+     * @param headers enumeration of request headers
      * @return {@code true} if all headers are allowed, {@code false} otherwise
      */
-    protected boolean checkHeaders(String headers) {
+    protected boolean checkHeaders(Enumeration<String> headers) {
         if (config.allowedHeaders == null) {
             return true;
         }
-        var split = Tokenizers.split(headers, ",");
         var allowed = config.allowedHeaders;
-        for (var header : split) {
-            if (!allowed.contains(header.strip().toLowerCase(Locale.ENGLISH))) {
+        while (headers.hasMoreElements()) {
+            if (!allowed.contains(headers.nextElement().toLowerCase(Locale.ENGLISH))) {
                 return false;
             }
         }
         return true;
     }
-
 
     /**
      * Handles a CORS preflight (OPTIONS) request.
@@ -172,8 +170,8 @@ public class CorsTask implements TaskConsumer<HttpContext> {
             return;
         }
         // Check for allowed headers
-        var requestedHeaders = req.getHeader(CorsHeaders.ACCESS_CONTROL_REQUEST_HEADERS);
-        if (requestedHeaders != null && !checkHeaders(requestedHeaders)) {
+        var requestedHeaders = req.getHeadersEnum(CorsHeaders.ACCESS_CONTROL_REQUEST_HEADERS);
+        if (requestedHeaders.hasMoreElements() && !checkHeaders(requestedHeaders)) {
             return;
         }
         // Render max-age
@@ -189,7 +187,14 @@ public class CorsTask implements TaskConsumer<HttpContext> {
             // Render methods
             res.setHeader(CorsHeaders.ACCESS_CONTROL_ALLOW_METHODS, methods == null ? allMethods : methods);
             // Render headers
-            res.setHeader(CorsHeaders.ACCESS_CONTROL_ALLOW_HEADERS, headers == null ? requestedHeaders : headers);
+            if (headers == null) {
+                var headersLine = req.getHeader(CorsHeaders.ACCESS_CONTROL_REQUEST_HEADERS);
+                if (headersLine != null) {
+                    res.setHeader(CorsHeaders.ACCESS_CONTROL_ALLOW_HEADERS, headersLine);
+                }
+            } else {
+                res.setHeader(CorsHeaders.ACCESS_CONTROL_ALLOW_HEADERS, headers);
+            }
             // Set vary for creds
             res.setHeader(ProxyHeaders.VARY, ProxyHeaders.CREDENTIALS_PREFLIGHT_VALUE);
         } else {
@@ -215,7 +220,7 @@ public class CorsTask implements TaskConsumer<HttpContext> {
      */
     protected void handlePlainRequest(HttpResponse res, String origin) {
         // Set Vary header
-        res.setHeader(ProxyHeaders.VARY, ProxyHeaders.ORIGIN_VALUE);
+        res.addHeader(ProxyHeaders.VARY, ProxyHeaders.ORIGIN_VALUE);
         // Split logic: with and without credentials
         if (config.allowCredentials) {
             // Render credentials
