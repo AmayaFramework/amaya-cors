@@ -27,8 +27,8 @@ To install it, you will need:
 
 ```Groovy
 dependencies {
-    implementation group: 'io.github.amayaframework', name: 'amaya-core', version: '3.1.0'
-    implementation group: 'io.github.amayaframework', name: 'amaya-cors', version: '1.0.2'
+    implementation group: 'io.github.amayaframework', name: 'amaya-core', version: '3.3.0'
+    implementation group: 'io.github.amayaframework', name: 'amaya-cors', version: '2.0.0'
 }
 ```
 
@@ -39,12 +39,12 @@ dependencies {
     <dependency>
         <groupId>io.github.amayaframework</groupId>
         <artifactId>amaya-core</artifactId>
-        <version>3.1.0</version>
+        <version>3.3.0</version>
     </dependency>
     <dependency>
         <groupId>io.github.amayaframework</groupId>
         <artifactId>amaya-cors</artifactId>
-        <version>1.0.2</version>
+        <version>2.0.0</version>
     </dependency>
 </dependencies>
 ```
@@ -75,7 +75,7 @@ public class Main {
         app.bind(8080);
 
         app.configurer().add((ctx, next) -> {
-            ctx.response().getWriter().println("Hello (now with CORS)");
+            ctx.response().writer().println("Hello (now with CORS)");
         });
 
         app.run();
@@ -102,7 +102,7 @@ public class Main {
         app.bind(8080);
 
         app.configurer().add((ctx, next) -> {
-            ctx.response().getWriter().println("Hello (now with CORS)");
+            ctx.response().writer().println("Hello (now with CORS)");
         });
 
         app.run();

@@ -159,7 +159,7 @@ public class CorsTask implements TaskConsumer<HttpContext> {
      */
     protected void handlePreflight(HttpRequest req, HttpResponse res, String origin, String method) {
         // Pre-set NO_CONTENT
-        res.setStatus(HttpCode.NO_CONTENT);
+        res.status(HttpCode.NO_CONTENT);
         // Check for origin
         if (!checkOrigin(origin)) {
             return;
@@ -171,41 +171,41 @@ public class CorsTask implements TaskConsumer<HttpContext> {
             return;
         }
         // Check for allowed headers
-        var requestedHeaders = req.getHeader(CorsHeaders.ACCESS_CONTROL_REQUEST_HEADERS);
+        var requestedHeaders = req.header(CorsHeaders.ACCESS_CONTROL_REQUEST_HEADERS);
         if (requestedHeaders != null && !checkHeaders(requestedHeaders)) {
             return;
         }
         // Render max-age
         if (maxAge != null) {
-            res.setHeader(CorsHeaders.ACCESS_CONTROL_MAX_AGE, maxAge);
+            res.header(CorsHeaders.ACCESS_CONTROL_MAX_AGE, maxAge);
         }
         // Split logic: with and without credentials
         if (config.allowCredentials) {
             // Render credentials
-            res.setHeader(CorsHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS, "true");
+            res.header(CorsHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS, "true");
             // Render origin
-            res.setHeader(CorsHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, origin);
+            res.header(CorsHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, origin);
             // Render methods
-            res.setHeader(CorsHeaders.ACCESS_CONTROL_ALLOW_METHODS, methods == null ? allMethods : methods);
+            res.header(CorsHeaders.ACCESS_CONTROL_ALLOW_METHODS, methods == null ? allMethods : methods);
             // Render headers
             if (headers == null) {
                 if (requestedHeaders != null) {
-                    res.setHeader(CorsHeaders.ACCESS_CONTROL_ALLOW_HEADERS, requestedHeaders);
+                    res.header(CorsHeaders.ACCESS_CONTROL_ALLOW_HEADERS, requestedHeaders);
                 }
             } else {
-                res.setHeader(CorsHeaders.ACCESS_CONTROL_ALLOW_HEADERS, headers);
+                res.header(CorsHeaders.ACCESS_CONTROL_ALLOW_HEADERS, headers);
             }
             // Set vary for creds
-            res.setHeader(ProxyHeaders.VARY, ProxyHeaders.CREDENTIALS_PREFLIGHT_VALUE);
+            res.header(ProxyHeaders.VARY, ProxyHeaders.CREDENTIALS_PREFLIGHT_VALUE);
         } else {
             // Render origin
-            res.setHeader(CorsHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, renderOrigin(origin));
+            res.header(CorsHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, renderOrigin(origin));
             // Render methods
-            res.setHeader(CorsHeaders.ACCESS_CONTROL_ALLOW_METHODS, methods == null ? "*" : methods);
+            res.header(CorsHeaders.ACCESS_CONTROL_ALLOW_METHODS, methods == null ? "*" : methods);
             // Render headers
-            res.setHeader(CorsHeaders.ACCESS_CONTROL_ALLOW_HEADERS, headers == null ? "*" : headers);
+            res.header(CorsHeaders.ACCESS_CONTROL_ALLOW_HEADERS, headers == null ? "*" : headers);
             // Set basic Vary
-            res.setHeader(ProxyHeaders.VARY, ProxyHeaders.ORIGIN_VALUE);
+            res.header(ProxyHeaders.VARY, ProxyHeaders.ORIGIN_VALUE);
         }
     }
 
@@ -219,27 +219,22 @@ public class CorsTask implements TaskConsumer<HttpContext> {
      * @param origin request origin
      */
     protected void handlePlainRequest(HttpResponse res, String origin) {
-        var vary = res.getHeader(ProxyHeaders.VARY);
-        if (vary == null) {
-            res.setHeader(ProxyHeaders.VARY, ProxyHeaders.ORIGIN_VALUE);
-        } else {
-            res.setHeader(ProxyHeaders.VARY, vary + "," + ProxyHeaders.ORIGIN_VALUE);
-        }
+        res.extendHeader(ProxyHeaders.VARY, ProxyHeaders.ORIGIN_VALUE);
         // Split logic: with and without credentials
         if (config.allowCredentials) {
             // Render credentials
-            res.setHeader(CorsHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS, "true");
+            res.header(CorsHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS, "true");
             // Render origin
-            res.setHeader(CorsHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, origin);
+            res.header(CorsHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, origin);
             // Render exposed headers
             if (exposed != null) {
-                res.setHeader(CorsHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, exposed);
+                res.header(CorsHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, exposed);
             }
         } else {
             // Render origin
-            res.setHeader(CorsHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, renderOrigin(origin));
+            res.header(CorsHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, renderOrigin(origin));
             // Render exposed headers
-            res.setHeader(CorsHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, exposed == null ? "*" : exposed);
+            res.header(CorsHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, exposed == null ? "*" : exposed);
         }
     }
 
@@ -255,14 +250,14 @@ public class CorsTask implements TaskConsumer<HttpContext> {
     public void run(HttpContext context, Task<HttpContext> next) throws Throwable {
         var req = context.request();
         // Try to find Origin
-        var origin = req.getHeader(CorsHeaders.ORIGIN);
+        var origin = req.header(CorsHeaders.ORIGIN);
         if (origin == null) {
             next.run(context);
             return;
         }
-        var requestedMethod = req.getHeader(CorsHeaders.ACCESS_CONTROL_REQUEST_METHOD);
+        var requestedMethod = req.header(CorsHeaders.ACCESS_CONTROL_REQUEST_METHOD);
         // Handle preflight
-        if (req.getMethod().equals(HttpMethod.OPTIONS) && requestedMethod != null) {
+        if (req.method().equals(HttpMethod.OPTIONS) && requestedMethod != null) {
             handlePreflight(req, context.response(), origin, requestedMethod);
             return;
         }
@@ -286,13 +281,13 @@ public class CorsTask implements TaskConsumer<HttpContext> {
     public CompletableFuture<Void> runAsync(HttpContext context, Task<HttpContext> next) {
         var req = context.request();
         // Try to find Origin
-        var origin = req.getHeader(CorsHeaders.ORIGIN);
+        var origin = req.header(CorsHeaders.ORIGIN);
         if (origin == null) {
             return next.runAsync(context);
         }
-        var requestedMethod = req.getHeader(CorsHeaders.ACCESS_CONTROL_REQUEST_METHOD);
+        var requestedMethod = req.header(CorsHeaders.ACCESS_CONTROL_REQUEST_METHOD);
         // Check for preflight
-        if (req.getMethod().equals(HttpMethod.OPTIONS) && requestedMethod != null) {
+        if (req.method().equals(HttpMethod.OPTIONS) && requestedMethod != null) {
             handlePreflight(req, context.response(), origin, requestedMethod);
             return CompletableFuture.completedFuture(null);
         }
