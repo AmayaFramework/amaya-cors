@@ -75,9 +75,9 @@ public final class CorsTaskTests {
         var req = mock(HttpRequest.class);
         var res = mock(HttpResponse.class);
 
-        when(req.getHeader(CorsHeaders.ORIGIN)).thenReturn("http://a.com");
-        when(req.getHeader(CorsHeaders.ACCESS_CONTROL_REQUEST_HEADERS)).thenReturn("X-Test");
-        when(req.getMethod()).thenReturn(HttpMethod.OPTIONS);
+        when(req.header(CorsHeaders.ORIGIN)).thenReturn("http://a.com");
+        when(req.header(CorsHeaders.ACCESS_CONTROL_REQUEST_HEADERS)).thenReturn("X-Test");
+        when(req.method()).thenReturn(HttpMethod.OPTIONS);
 
         var config = new CorsConfig();
         config.setAllowedOrigins(Set.of("http://a.com"));
@@ -89,13 +89,13 @@ public final class CorsTaskTests {
         var task = new CorsTask(config);
         task.handlePreflight(req, res, "http://a.com", "GET");
 
-        verify(res).setStatus(HttpCode.NO_CONTENT);
-        verify(res).setHeader(CorsHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "http://a.com");
-        verify(res).setHeader(CorsHeaders.ACCESS_CONTROL_ALLOW_METHODS, "get");
-        verify(res).setHeader(CorsHeaders.ACCESS_CONTROL_ALLOW_HEADERS, "x-test");
-        verify(res).setHeader(CorsHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS, "true");
-        verify(res).setHeader(CorsHeaders.ACCESS_CONTROL_MAX_AGE, "100");
-        verify(res).setHeader(ProxyHeaders.VARY, ProxyHeaders.CREDENTIALS_PREFLIGHT_VALUE);
+        verify(res).status(HttpCode.NO_CONTENT);
+        verify(res).header(CorsHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "http://a.com");
+        verify(res).header(CorsHeaders.ACCESS_CONTROL_ALLOW_METHODS, "get");
+        verify(res).header(CorsHeaders.ACCESS_CONTROL_ALLOW_HEADERS, "x-test");
+        verify(res).header(CorsHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS, "true");
+        verify(res).header(CorsHeaders.ACCESS_CONTROL_MAX_AGE, "100");
+        verify(res).header(ProxyHeaders.VARY, ProxyHeaders.CREDENTIALS_PREFLIGHT_VALUE);
     }
 
     @Test
@@ -108,9 +108,9 @@ public final class CorsTaskTests {
 
         task.handlePlainRequest(res, "http://any.com");
 
-        verify(res).setHeader(CorsHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "*");
-        verify(res).setHeader(CorsHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, "*");
-        verify(res).setHeader(ProxyHeaders.VARY, ProxyHeaders.ORIGIN_VALUE);
+        verify(res).header(CorsHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "*");
+        verify(res).header(CorsHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, "*");
+        verify(res).extendHeader(ProxyHeaders.VARY, ProxyHeaders.ORIGIN_VALUE);
     }
 
     @Test
@@ -122,7 +122,7 @@ public final class CorsTaskTests {
 
         when(context.request()).thenReturn(req);
         when(context.response()).thenReturn(res);
-        when(req.getHeader(CorsHeaders.ORIGIN)).thenReturn(null);
+        when(req.header(CorsHeaders.ORIGIN)).thenReturn(null);
 
         var config = new CorsConfig();
         var task = new CorsTask(config);
@@ -140,9 +140,9 @@ public final class CorsTaskTests {
 
         when(context.request()).thenReturn(req);
         when(context.response()).thenReturn(res);
-        when(req.getHeader(CorsHeaders.ORIGIN)).thenReturn("http://a.com");
-        when(req.getHeader(CorsHeaders.ACCESS_CONTROL_REQUEST_METHOD)).thenReturn("POST");
-        when(req.getMethod()).thenReturn(HttpMethod.OPTIONS);
+        when(req.header(CorsHeaders.ORIGIN)).thenReturn("http://a.com");
+        when(req.header(CorsHeaders.ACCESS_CONTROL_REQUEST_METHOD)).thenReturn("POST");
+        when(req.method()).thenReturn(HttpMethod.OPTIONS);
 
         var config = new CorsConfig();
         config.setAllowedOrigins(Set.of("http://a.com"));
@@ -150,8 +150,8 @@ public final class CorsTaskTests {
         var task = new CorsTask(config);
 
         task.run(context, SyncTask.EMPTY);
-        verify(res).setStatus(HttpCode.NO_CONTENT);
-        verify(res, never()).setHeader(eq(CorsHeaders.ACCESS_CONTROL_ALLOW_METHODS), anyString());
+        verify(res).status(HttpCode.NO_CONTENT);
+        verify(res, never()).header(eq(CorsHeaders.ACCESS_CONTROL_ALLOW_METHODS), anyString());
     }
 
     @Test
@@ -163,7 +163,7 @@ public final class CorsTaskTests {
 
         when(context.request()).thenReturn(req);
         when(context.response()).thenReturn(res);
-        when(req.getHeader(CorsHeaders.ORIGIN)).thenReturn(null);
+        when(req.header(CorsHeaders.ORIGIN)).thenReturn(null);
 
         var config = new CorsConfig();
         var task = new CorsTask(config);
