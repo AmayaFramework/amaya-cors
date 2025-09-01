@@ -62,7 +62,7 @@ public class Main {
     public static void main(String[] args) throws Throwable {
         var app = WebBuilders.create()
                 .withServerFactory(/*your server factory here*/)
-                .configureApplication(Cors.applicationConfigurer(cfg -> {
+                .configureApplication(Cors.configurer(cfg -> {
                     cfg.allowedOrigins().allow("http://example.com", "https://another.com");
                     cfg.allowedMethods().allow(HttpMethod.GET, HttpMethod.POST);
                     cfg.allowedHeaders().allow("X-Test", "Authorization");
@@ -94,7 +94,7 @@ public class Main {
     public static void main(String[] args) throws Throwable {
         var app = WebBuilders.create()
                 .withServerFactory(/*your server factory here*/)
-                .configureApplication(Cors.applicationConfigurer(cfg -> {
+                .configureApplication(Cors.configurer(cfg -> {
                     cfg.allowAny(); // Overrides specific origin/method/header settings
                 }))
                 .build();
