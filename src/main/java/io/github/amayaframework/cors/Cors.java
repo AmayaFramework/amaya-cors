@@ -49,7 +49,7 @@ public final class Cors {
      *                  and applies them automatically
      * @return a new {@link CorsApplicationConfigurer}
      */
-    public static CorsApplicationConfigurer applicationConfigurer(boolean configure) {
+    public static CorsApplicationConfigurer configurer(boolean configure) {
         return new CorsApplicationConfigurer(configure);
     }
 
@@ -63,7 +63,7 @@ public final class Cors {
      * @param consumer a {@link Consumer} that receives the {@link CorsConfigurer} to configure
      * @return a {@link CorsApplicationConfigurer} with the custom CORS configuration applied
      */
-    public static CorsApplicationConfigurer applicationConfigurer(Consumer<CorsConfigurer> consumer) {
+    public static CorsApplicationConfigurer configurer(Consumer<CorsConfigurer> consumer) {
         var ret = new CorsApplicationConfigurer(false);
         consumer.accept(ret.getConfigurer());
         return ret;
@@ -83,7 +83,7 @@ public final class Cors {
      *
      * @return a pre-configured {@link CorsApplicationConfigurer}
      */
-    public static CorsApplicationConfigurer applicationConfigurer() {
+    public static CorsApplicationConfigurer configurer() {
         var ret = new CorsApplicationConfigurer(false);
         var cfg = ret.getConfigurer();
         cfg.allowedOrigins().allowAny();
