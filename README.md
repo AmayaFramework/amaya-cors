@@ -28,7 +28,7 @@ To install it, you will need:
 ```Groovy
 dependencies {
     implementation group: 'io.github.amayaframework', name: 'amaya-core', version: '3.3.0'
-    implementation group: 'io.github.amayaframework', name: 'amaya-cors', version: '2.0.0'
+    implementation group: 'io.github.amayaframework', name: 'amaya-cors', version: '2.1.0'
 }
 ```
 
@@ -44,7 +44,7 @@ dependencies {
     <dependency>
         <groupId>io.github.amayaframework</groupId>
         <artifactId>amaya-cors</artifactId>
-        <version>2.0.0</version>
+        <version>2.1.0</version>
     </dependency>
 </dependencies>
 ```
