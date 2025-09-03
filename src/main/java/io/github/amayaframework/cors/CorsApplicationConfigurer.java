@@ -3,7 +3,10 @@ package io.github.amayaframework.cors;
 import com.github.romanqed.jfunc.Runnable1;
 import io.github.amayaframework.http.HttpMethod;
 import io.github.amayaframework.options.OptionSet;
+import io.github.amayaframework.server.HttpMethodBuffer;
+import io.github.amayaframework.server.ServerOptions;
 import io.github.amayaframework.web.WebApplication;
+import io.github.amayaframework.web.WebOptions;
 
 /**
  * Configures CORS for a {@link WebApplication} using {@link CorsConfigBuilder} and {@link CorsTask}.
@@ -14,7 +17,7 @@ import io.github.amayaframework.web.WebApplication;
 public final class CorsApplicationConfigurer implements Runnable1<WebApplication> {
     private final CorsConfigBuilder builder;
     private final boolean configure;
-    private HttpMethodParser parser;
+    private HttpMethodBuffer buffer;
     private Iterable<HttpMethod> allMethods;
 
     /**
@@ -44,23 +47,23 @@ public final class CorsApplicationConfigurer implements Runnable1<WebApplication
     }
 
     /**
-     * Returns the parser used to convert strings to {@link HttpMethod} values
+     * Returns the buffer used to convert strings to {@link HttpMethod} values
      * when handling preflight requests.
      *
-     * @return the HTTP method parser
+     * @return the HTTP method buffer
      */
-    public HttpMethodParser getParser() {
-        return parser;
+    public HttpMethodBuffer getMethodBuffer() {
+        return buffer;
     }
 
     /**
-     * Sets the parser used to convert strings to {@link HttpMethod} values
+     * Sets the buffer used to convert strings to {@link HttpMethod} values
      * for preflight requests.
      *
-     * @param parser the HTTP method parser to use
+     * @param buffer the HTTP method parser to use
      */
-    public void setParser(HttpMethodParser parser) {
-        this.parser = parser;
+    public void setMethodBuffer(HttpMethodBuffer buffer) {
+        this.buffer = buffer;
     }
 
     /**
@@ -143,15 +146,17 @@ public final class CorsApplicationConfigurer implements Runnable1<WebApplication
     @Override
     public void run(WebApplication app) {
         if (configure) {
-            var options = app.options().getGroup(CorsOptions.CORS_GROUP);
-            if (options != null) {
-                configure(options);
+            var options = app.options();
+            var cors = options.getGroup(CorsOptions.CORS_GROUP);
+            if (cors != null) {
+                configure(cors);
             }
+            buffer = options.get(WebOptions.SERVER_GROUP, ServerOptions.HTTP_METHOD_BUFFER);
         }
         var config = builder.build();
         var task = new CorsTask(
                 config,
-                parser == null ? HttpMethod::of : parser,
+                buffer == null ? HttpMethod::of : buffer,
                 allMethods == null ? HttpMethod.all().values() : allMethods
         );
         app.configurer().add(task);

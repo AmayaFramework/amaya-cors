@@ -7,6 +7,7 @@ import io.github.amayaframework.context.HttpRequest;
 import io.github.amayaframework.context.HttpResponse;
 import io.github.amayaframework.http.HttpCode;
 import io.github.amayaframework.http.HttpMethod;
+import io.github.amayaframework.server.HttpMethodBuffer;
 import io.github.amayaframework.tokenize.Tokenizers;
 
 import java.util.Locale;
@@ -28,11 +29,11 @@ public class CorsTask implements TaskConsumer<HttpContext> {
     protected final CorsConfig config;
 
     /**
-     * Parser used to resolve {@link HttpMethod} from a string.
+     * Buffer used to resolve {@link HttpMethod} from a string.
      * <p>
-     * By default, uses {@link HttpMethod#of(String)} to parse HTTP methods.
+     * By default, uses {@link HttpMethod#of(String)} to read HTTP methods.
      */
-    protected final HttpMethodParser parser;
+    protected final HttpMethodBuffer buffer;
 
     /**
      * String representation of all supported HTTP methods.
@@ -64,12 +65,12 @@ public class CorsTask implements TaskConsumer<HttpContext> {
      * Creates a new {@code CorsTask} with the given configuration.
      *
      * @param config     the CORS configuration
-     * @param parser     the HTTP method parser
+     * @param buffer     the HTTP method buffer
      * @param allMethods iterable of all available HTTP methods
      */
-    public CorsTask(CorsConfig config, HttpMethodParser parser, Iterable<HttpMethod> allMethods) {
+    public CorsTask(CorsConfig config, HttpMethodBuffer buffer, Iterable<HttpMethod> allMethods) {
         this.config = config;
-        this.parser = parser;
+        this.buffer = buffer;
         this.methods = StringUtil.render(config.allowedMethods);
         this.allMethods = StringUtil.render(allMethods);
         this.headers = StringUtil.render(config.allowedHeaders);
@@ -166,7 +167,7 @@ public class CorsTask implements TaskConsumer<HttpContext> {
         }
         // Check for method
         var allowedMethods = config.allowedMethods;
-        var requestedMethod = parser.parse(method);
+        var requestedMethod = buffer.get(method);
         if (requestedMethod == null || (allowedMethods != null && !allowedMethods.contains(requestedMethod))) {
             return;
         }
